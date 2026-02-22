@@ -42,8 +42,8 @@ Creates a GitHub repository using the GitHub REST API and pushes files using Git
 
 | Router | Management IP | Role |
 |--------|--------------|------|
-| R1 | 10.0.1.1 | Core router |
+| R1 | 10.0.1.1 | DHCP Server (IPv4 & IPv6) |
 | R2 | 10.0.0.2 | DHCP client (static host pool) |
 | R3 | 10.0.0.3 | DHCP client (static host pool) |
-| R4 | 198.51.100.4 | DHCP client (dynamic pool), jump host to R5 |
+| R4 | 198.51.100.4 | DHCP client (dynamic pool), jump host to R5, IPv6 SLAAC provider |
 | R5 | 10.0.0.5 | DHCP server |
