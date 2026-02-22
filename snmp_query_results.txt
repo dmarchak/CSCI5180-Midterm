@@ -1,0 +1,98 @@
+{
+    "R1": {
+        "addresses": {
+            "FastEthernet1/0": {
+                "v4": "10.0.1.1/24",
+                "v6": "dead:beef::1/64"
+            }
+        },
+        "interfaces": {
+            "FastEthernet0/0": "down",
+            "FastEthernet1/0": "up",
+            "FastEthernet1/1": "down",
+            "FastEthernet2/0": "down",
+            "FastEthernet2/1": "down",
+            "GigabitEthernet3/0": "down",
+            "Null0": "up"
+        }
+    },
+    "R2": {
+        "addresses": {
+            "FastEthernet0/0": {
+                "v4": "10.0.0.2/24",
+                "v6": "beef:cafe::c802:31ff:feb1:0/64"
+            },
+            "FastEthernet1/0": {
+                "v4": "10.0.1.2/24"
+            }
+        },
+        "interfaces": {
+            "FastEthernet0/0": "up",
+            "FastEthernet1/0": "up",
+            "FastEthernet1/1": "down",
+            "FastEthernet2/0": "down",
+            "FastEthernet2/1": "down",
+            "GigabitEthernet3/0": "down",
+            "VoIP-Null0": "up",
+            "Null0": "up"
+        }
+    },
+    "R3": {
+        "addresses": {
+            "FastEthernet0/0": {
+                "v4": "10.0.0.3/24",
+                "v6": "beef:cafe::c803:31ff:fec0:0/64"
+            },
+            "FastEthernet1/0": {
+                "v4": "10.0.1.3/24"
+            }
+        },
+        "interfaces": {
+            "FastEthernet0/0": "up",
+            "FastEthernet1/0": "up",
+            "FastEthernet1/1": "down",
+            "FastEthernet2/0": "down",
+            "FastEthernet2/1": "down",
+            "GigabitEthernet3/0": "down",
+            "VoIP-Null0": "up",
+            "Null0": "up"
+        }
+    },
+    "R4": {
+        "addresses": {
+            "FastEthernet0/0": {
+                "v4": "10.0.0.1/24",
+                "v6": "beef:cafe::1/64"
+            },
+            "FastEthernet1/0": {
+                "v4": "198.51.100.4/24"
+            }
+        },
+        "interfaces": {
+            "FastEthernet0/0": "up",
+            "FastEthernet1/0": "up",
+            "FastEthernet1/1": "down",
+            "FastEthernet2/0": "down",
+            "FastEthernet2/1": "down",
+            "GigabitEthernet3/0": "down",
+            "Null0": "up"
+        }
+    },
+    "R5": {
+        "addresses": {
+            "FastEthernet0/0": {
+                "v4": "10.0.0.5/24",
+                "v6": "beef:cafe::c805:31ff:fefc:0/64"
+            }
+        },
+        "interfaces": {
+            "FastEthernet0/0": "up",
+            "FastEthernet1/0": "down",
+            "FastEthernet1/1": "down",
+            "FastEthernet2/0": "down",
+            "FastEthernet2/1": "down",
+            "GigabitEthernet3/0": "down",
+            "Null0": "up"
+        }
+    }
+}
