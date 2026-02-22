@@ -209,7 +209,7 @@ def push_modified_files(repo):
     # Commit and push
     repo.index.commit("Update modified files")
     repo.remotes.origin.push(refspec="HEAD:refs/heads/main")
-    print("  Pushed modified files to GitHub.")
+    print("Pushed modified files to GitHub.")
 
 
 def main():
