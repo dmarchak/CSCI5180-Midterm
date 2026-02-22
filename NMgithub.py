@@ -5,17 +5,16 @@
 # NMgithub.py - Create a GitHub repo, push SNMP output files, and sync modified files.
 
 # imports
-import os
-import sys
-import glob
-import json
-import base64
-import getpass
-import requests
-from git import Repo
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-from cryptography.hazmat.primitives import hashes
-from cryptography.fernet import Fernet, InvalidToken
+import os # absolute file path functionality
+import glob # use to find all directory files
+import json # handles decrypted credentials and github API response
+import base64 # decode binary snmp information
+import getpass # password functionality
+import requests # HTTP requests
+from git import Repo # git functionality
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC # password based key derivation function 2 support for credentials
+from cryptography.hazmat.primitives import hashes # hash support for credentials
+from cryptography.fernet import Fernet, InvalidToken # fernet encryption/decryption for credentials
 
 # Function Definitions
 
@@ -83,7 +82,7 @@ def load_credentials():
         return creds["username"], creds["token"]
     except InvalidToken:
         print("  Error: Wrong password. Cannot decrypt credentials.")
-        sys.exit(1)
+        raise SystemExit(1)
 
 
 def create_github_repo(username, token, repo_name):
@@ -136,7 +135,7 @@ def push_snmp_output(repo, remote_url):
     print("\nPushing SNMP output files (.txt, .jpg) to GitHub...")
     repo_dir = repo.working_dir
 
-    # Find all .txt and .jpg files in the repo directory
+    # Use glob to find all .txt and .jpg files in the repo directory
     txt_files = glob.glob(os.path.join(repo_dir, "*.txt"))
     jpg_files = glob.glob(os.path.join(repo_dir, "*.jpg"))
     output_files = txt_files + jpg_files
