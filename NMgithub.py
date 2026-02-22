@@ -6,17 +6,84 @@
 
 # imports
 import os
+import sys
 import glob
+import json
+import base64
+import getpass
 import requests
 from git import Repo
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+from cryptography.hazmat.primitives import hashes
+from cryptography.fernet import Fernet, InvalidToken
 
 # Function Definitions
 
-def get_credentials():
-    # Prompt the user for their GitHub username and personal access token.
+# Path to the encrypted credentials file (stored alongside this script)
+CREDS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".github_creds.enc")
+
+
+def derive_key(password, salt):
+    # Derive a Fernet encryption key from a password and salt using PBKDF2.
+    kdf = PBKDF2HMAC(
+        algorithm=hashes.SHA256(),
+        length=32,
+        salt=salt,
+        iterations=480000,
+    )
+    return base64.urlsafe_b64encode(kdf.derive(password.encode()))
+
+
+def setup_credentials():
+    # First-time setup: encrypt and store GitHub username and token.
+    print("\n--- First-time credential setup ---")
     username = input("GitHub username: ").strip()
     token = input("GitHub personal access token: ").strip()
+    password = getpass.getpass("Create an encryption password: ")
+
+    # Generate a random salt and derive the encryption key
+    salt = os.urandom(16)
+    key = derive_key(password, salt)
+    fernet = Fernet(key)
+
+    # Encrypt the credentials as JSON
+    creds = json.dumps({"username": username, "token": token})
+    encrypted = fernet.encrypt(creds.encode())
+
+    # Store salt + encrypted data
+    with open(CREDS_FILE, "wb") as f:
+        f.write(salt + encrypted)
+
+    print(f"  Credentials encrypted and saved to {os.path.basename(CREDS_FILE)}")
     return username, token
+
+
+def load_credentials():
+    # Load and decrypt stored GitHub credentials using a password prompt.
+
+    if not os.path.exists(CREDS_FILE):
+        return setup_credentials()
+
+    password = getpass.getpass("Enter encryption password: ")
+
+    with open(CREDS_FILE, "rb") as f:
+        data = f.read()
+
+    # First 16 bytes are the salt, rest is the encrypted data
+    salt = data[:16]
+    encrypted = data[16:]
+
+    key = derive_key(password, salt)
+    fernet = Fernet(key)
+
+    try:
+        decrypted = fernet.decrypt(encrypted)
+        creds = json.loads(decrypted.decode())
+        print("  Credentials decrypted successfully.")
+        return creds["username"], creds["token"]
+    except InvalidToken:
+        print("  Error: Wrong password. Cannot decrypt credentials.")
+        sys.exit(1)
 
 
 def create_github_repo(username, token, repo_name):
@@ -144,8 +211,8 @@ def main():
     repo_dir = os.path.dirname(os.path.abspath(__file__))
     repo_name = "CSCI5180-Midterm"
 
-    # Step 1: Get GitHub credentials
-    username, token = get_credentials()
+    # Step 1: Load or set up encrypted GitHub credentials
+    username, token = load_credentials()
 
     # Step 2: Create the GitHub repository
     remote_url = create_github_repo(username, token, repo_name)
