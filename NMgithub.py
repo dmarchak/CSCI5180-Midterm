@@ -60,11 +60,14 @@ def setup_credentials():
 def load_credentials():
     # Load and decrypt stored GitHub credentials using a password prompt.
 
+    # check for existing credentials file, otherwise run first time setup
     if not os.path.exists(CREDS_FILE):
         return setup_credentials()
 
+    # prompt for password (text is hidden)
     password = getpass.getpass("Enter password: ")
 
+    # read the encrypted credentials file
     with open(CREDS_FILE, "rb") as f:
         data = f.read()
 
@@ -72,9 +75,11 @@ def load_credentials():
     salt = data[:16]
     encrypted = data[16:]
 
+    # use provided password and salt to derive fernet key
     key = derive_key(password, salt)
     fernet = Fernet(key)
 
+    # try to decrypt credentials, otherwise return an incorrect password error
     try:
         decrypted = fernet.decrypt(encrypted)
         creds = json.loads(decrypted.decode())
@@ -91,6 +96,7 @@ def create_github_repo(username, token, repo_name):
 
     print(f"\nCreating GitHub repository '{repo_name}'...")
 
+    # send post request to github with token authorization and repo name
     response = requests.post(
         "https://api.github.com/user/repos",
         headers={
@@ -104,6 +110,7 @@ def create_github_repo(username, token, repo_name):
         },
     )
 
+    # use the response code to determine if the repo already exists or was created
     if response.status_code == 201:
         print(f"  Repository '{repo_name}' created successfully.")
     elif response.status_code == 422:

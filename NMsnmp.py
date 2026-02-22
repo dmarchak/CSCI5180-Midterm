@@ -6,25 +6,23 @@
 # Monitor CPU utilization of R1 for 2 minutes every 5 seconds and plot.
 
 # imports
-import json
-import time
-import asyncio
-import ipaddress
-import matplotlib
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt
-from puresnmp import Client, V2C, PyWrapper
-
-# Function Definitions
+import json # save SNMP query results as JSON
+import time # track CPU monitoring timestamps
+import asyncio # async support for puresnmp operations
+import ipaddress # convert subnet masks to prefix lengths and parse IPv6 addresses
+import matplotlib # plotting library for CPU graph
+matplotlib.use("Agg") # use non-interactive backend for headless rendering
+import matplotlib.pyplot as plt # create and save CPU utilization line graph
+from puresnmp import Client, V2C, PyWrapper # SNMP v2c client for walking and getting OIDs
 
 # SNMP OID constants
-OID_IF_DESCR       = "1.3.6.1.2.1.2.2.1.2"       # ifDescr - interface names
-OID_IF_OPER_STATUS = "1.3.6.1.2.1.2.2.1.8"       # ifOperStatus - 1=up, 2=down
-OID_IP_IF_INDEX    = "1.3.6.1.2.1.4.20.1.2"       # ipAdEntIfIndex - maps IPv4 addr to ifIndex
-OID_IP_NET_MASK    = "1.3.6.1.2.1.4.20.1.3"       # ipAdEntNetMask - subnet mask
-OID_IPADDR_IFINDEX = "1.3.6.1.2.1.4.34.1.3"       # ipAddressIfIndex (IP-MIB, RFC 4293)
-OID_IPADDR_PREFIX  = "1.3.6.1.2.1.4.34.1.5"       # ipAddressPrefix (IP-MIB, RFC 4293)
-OID_CPU_5SEC       = "1.3.6.1.4.1.9.9.109.1.1.1.1.6.1"  # cpmCPUTotal5secRev (CISCO-PROCESS-MIB, CPU index 1)
+OID_IF_DESCR       = "1.3.6.1.2.1.2.2.1.2"       # ifDescr
+OID_IF_OPER_STATUS = "1.3.6.1.2.1.2.2.1.8"       # ifOperStatus
+OID_IP_IF_INDEX    = "1.3.6.1.2.1.4.20.1.2"       # ipAdEntIfIndex
+OID_IP_NET_MASK    = "1.3.6.1.2.1.4.20.1.3"       # ipAdEntNetMask
+OID_IPADDR_IFINDEX = "1.3.6.1.2.1.4.34.1.3"       # ipAddressIfIndex
+OID_IPADDR_PREFIX  = "1.3.6.1.2.1.4.34.1.5"       # ipAddressPrefix
+OID_CPU_5SEC       = "1.3.6.1.4.1.9.9.109.1.1.1.1.6.1"  # cpmCPUTotal5secRev
 
 # SNMP community string
 COMMUNITY = "PUBLIC"
@@ -98,15 +96,12 @@ async def get_ipv4_addresses(client, if_map):
 
 async def get_ipv6_addresses(client, if_map):
     # Walk IP-MIB ipAddressTable to collect IPv6 addresses per interface.
-    # OID index format: ipAddressIfIndex.<addrType>.<addrLen>.<addr octets...>
-    # addrType: 1=IPv4, 2=IPv6, 4=IPv6z (with zone)
-    # Returns {interface_name: "xxxx::xxxx/prefix"} dict.
 
     base_if = OID_IPADDR_IFINDEX + "."
     base_pfx = OID_IPADDR_PREFIX + "."
 
     # Walk ipAddressIfIndex to find IPv6 addresses and their ifIndex
-    ipv6_entries = {}  # key: addr_index_suffix -> (ipv6_addr, if_index)
+    ipv6_entries = {}
     for oid, value in await walk(client, OID_IPADDR_IFINDEX):
         if not oid.startswith(base_if):
             continue
@@ -131,7 +126,7 @@ async def get_ipv6_addresses(client, if_map):
         ipv6_entries[index] = (ipv6_addr, str(int(value)))
 
     # Walk ipAddressPrefix to get prefix lengths for each IPv6 address
-    prefix_map = {}  # key: addr_index_suffix -> prefix_len
+    prefix_map = {}
     for oid, value in await walk(client, OID_IPADDR_PREFIX):
         if not oid.startswith(base_pfx):
             continue
@@ -174,7 +169,7 @@ async def query_router(name, ip):
 
 
 async def monitor_cpu(ip, duration=120, interval=5):
-    # Poll R1's CPU utilization every 'interval' seconds for 'duration' seconds.
+    # Poll R1's CPU utilization every 5 seconds for 120 seconds.
     # Plot the data as a line graph and save as cpu_utilization.jpg.
     print(f"\nMonitoring CPU utilization on {ip} for {duration} seconds...")
 
