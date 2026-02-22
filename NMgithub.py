@@ -64,7 +64,7 @@ def load_credentials():
     if not os.path.exists(CREDS_FILE):
         return setup_credentials()
 
-    password = getpass.getpass("Enter encryption password: ")
+    password = getpass.getpass("Enter password: ")
 
     with open(CREDS_FILE, "rb") as f:
         data = f.read()
@@ -207,7 +207,7 @@ def push_modified_files(repo):
 
 
 def main():
-    # Working directory is the Lab 5 folder
+    # Set working directory and repo name
     repo_dir = os.path.dirname(os.path.abspath(__file__))
     repo_name = "CSCI5180-Midterm"
 
