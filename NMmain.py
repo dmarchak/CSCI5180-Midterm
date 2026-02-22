@@ -13,7 +13,7 @@ import asyncio # required to run async NMsnmp main function
 def main():
     while True:
         # display the menu
-        print("\n===== CSCI 5180 Midterm Lab =====")
+        print("\n===== CSCI 5180 Midterm Lab - Dustin Marchak =====")
         print("1. NMtcpdump   - Parse pcap and discover MAC addresses")
         print("2. NMdhcpserver - Configure DHCP pools on R5")
         print("3. NMsnmp      - SNMP queries and CPU monitoring")

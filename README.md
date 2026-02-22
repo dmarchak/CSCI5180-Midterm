@@ -5,6 +5,9 @@ Network Management & Automation scripts for a GNS3 lab topology with five Cisco 
 
 ## Python Scripts
 
+### NMmain.py
+Main menu script that imports and runs each of the four lab scripts. Presents a numbered menu to select which script to execute, then returns to the menu after completion.
+
 ### NMtcpdump.py
 Parses a packet capture file (`capture.pcap`) using PyShark to discover router IP addresses from ICMP echo requests. Then SSHes into each discovered router via Netmiko to retrieve the hostname and FastEthernet0/0 MAC address.
 
